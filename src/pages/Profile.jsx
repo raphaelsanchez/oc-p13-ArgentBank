@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
  * User page.
  * @returns {JSX.Element} The User component.
  */
-export default function User() {
+export default function Profile() {
     const [showEditForm, setShowEditForm] = useState(false)
 
     /**

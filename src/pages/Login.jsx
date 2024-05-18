@@ -2,7 +2,7 @@
  * SignIn page.
  * @returns {JSX.Element} The SignIn component.
  */
-export default function SignIn() {
+export default function Login() {
     return (
         <main className="main bg-dark">
             <section className="sign-in-content">
@@ -22,7 +22,7 @@ export default function SignIn() {
                         <label htmlFor="remember-me">Remember me</label>
                     </div>
                     {/* <!-- PLACEHOLDER DUE TO STATIC SITE --> */}
-                    <a href="./user.html" className="sign-in-button">
+                    <a href="/profile" className="sign-in-button">
                         Sign In
                     </a>
                     {/* <!-- SHOULD BE THE BUTTON BELOW --> */}

@@ -21,7 +21,7 @@ export default function Nav() {
             <div>
                 {/* TODO: Dynamiser cette partie */}
                 {isAuthenticated && user && (
-                    <a className="main-nav-item" href="/user">
+                    <a className="main-nav-item" href="/profile">
                         <i className="fa fa-user-circle"></i>
                         <span>{user.firstName}</span>
                     </a>
@@ -34,7 +34,7 @@ export default function Nav() {
                         <span>Sign Out</span>
                     </a>
                 ) : (
-                    <a className="main-nav-item" href="/sign-in">
+                    <a className="main-nav-item" href="/login">
                         <i className="fa fa-user-circle"></i>
                         <span>Sign In</span>
                     </a>

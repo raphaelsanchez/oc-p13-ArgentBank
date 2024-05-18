@@ -1,8 +1,8 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import App from './layouts/App'
 import Home from './pages/Home'
-import SignIn from './pages/SignIn'
-import User from './pages/User'
+import Login from './pages/Login'
+import Profile from './pages/Profile'
 /**
  * Router component. Defines the application routes.
  *
@@ -19,12 +19,12 @@ export function Router() {
                     element: <Home />,
                 },
                 {
-                    path: '/sign-in',
-                    element: <SignIn />,
+                    path: '/login',
+                    element: <Login />,
                 },
                 {
-                    path: '/user',
-                    element: <User />,
+                    path: '/profile',
+                    element: <Profile />,
                 },
             ],
         },
