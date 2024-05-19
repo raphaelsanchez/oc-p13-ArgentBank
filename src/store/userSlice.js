@@ -10,7 +10,20 @@ import { createSlice } from '@reduxjs/toolkit'
  * @property {string} lastname - The user's last name.
  * @property {string|null} token - The user's authentication token.
  */
-const initialState = {}
+const initialState = {
+    firstname:
+        localStorage.getItem('firstname') ||
+        sessionStorage.getItem('firstname') ||
+        '',
+    lastname:
+        localStorage.getItem('lastname') ||
+        sessionStorage.getItem('lastname') ||
+        '',
+    token:
+        localStorage.getItem('token') ||
+        sessionStorage.getItem('token') ||
+        null,
+}
 
 /**
  * Creates a Redux slice for the user.
