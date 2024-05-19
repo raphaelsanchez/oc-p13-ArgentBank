@@ -1,6 +1,7 @@
 import IconChat from '../assets/images/icon-chat.png'
 import IconMoney from '../assets/images/icon-money.png'
 import IconSecurity from '../assets/images/icon-security.png'
+
 /**
  * The Home component.
  * @returns {JSX.Element} The Home component.

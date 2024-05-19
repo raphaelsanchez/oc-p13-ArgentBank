@@ -1,44 +1,36 @@
+import { useSelector } from 'react-redux'
+import { NavLink } from 'react-router-dom'
+import SignInOut from '../components/SignInOut'
+
 /**
  * Nav component.
  * @returns {JSX.Element} The Nav component.
  */
 export default function Nav() {
-    const isAuthenticated = true
-    const user = {
-        firstName: 'Tony',
-        lastName: 'Stark',
-    }
+    // Redux state
+    const user = useSelector((state) => state.user)
+
+    // return the JSX for the component
     return (
         <nav className="main-nav">
-            <a className="main-nav-logo" href="/">
+            <NavLink className="main-nav-logo" to="/">
                 <img
                     className="main-nav-logo-image"
                     src="argentBankLogo.png"
                     alt="Argent Bank Logo"
                 />
                 <h1 className="sr-only">Argent Bank</h1>
-            </a>
+            </NavLink>
             <div>
                 {/* TODO: Dynamiser cette partie */}
-                {isAuthenticated && user && (
-                    <a className="main-nav-item" href="/profile">
+                {user && user.token && (
+                    <NavLink className="main-nav-item" to="/profile">
                         <i className="fa fa-user-circle"></i>
-                        <span>{user.firstName}</span>
-                    </a>
+                        <span>{user.firstname}</span>
+                    </NavLink>
                 )}
 
-                {/* TODO: Créer un composant séparé ? */}
-                {isAuthenticated ? (
-                    <a className="main-nav-item" href="/sign-out">
-                        <i className="fa fa-sign-out"></i>
-                        <span>Sign Out</span>
-                    </a>
-                ) : (
-                    <a className="main-nav-item" href="/login">
-                        <i className="fa fa-user-circle"></i>
-                        <span>Sign In</span>
-                    </a>
-                )}
+                <SignInOut />
             </div>
         </nav>
     )
