@@ -343,6 +343,16 @@ input[type="password"] {
     color: #fff;
 }
 
+/* Message */
+.error-message {
+    color: #ff0000;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    background-color: #ffeeee;
+    border: 1px solid #ff0000;
+    border-radius: 0.25rem;
+}
+
 @media (min-width: 720px) {
     .account {
         flex-direction: row;
