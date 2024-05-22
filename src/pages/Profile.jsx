@@ -1,70 +1,44 @@
 import { useCallback, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { accountData } from '../__mocks__/accountData'
 import AccountSection from '../components/AccountSection'
 import Button from '../components/ui/Button'
 import { InputField } from '../components/ui/InputField'
-import { updateUser } from '../store/userSlice'
-import { persistUserInStorage } from '../utils'
 
 /**
- * User page.
- * @returns {JSX.Element} The User component.
+ * Profile component - Allows the user to view and edit their profile
+ * @component
  */
 export default function Profile() {
-    // Redux state
-    const user = useSelector((state) => state.user)
-    const dispatch = useDispatch()
+    // Get the current user's first and last name from the Redux store
+    const firstname = useSelector((state) => state.auth.firstName)
+    const lastname = useSelector((state) => state.auth.lastName)
 
-    // Local state
+    // Local state for form visibility and form inputs
     const [showEditForm, setShowEditForm] = useState(false)
-    const [firstname, setFirstname] = useState(user.firstname || '')
-    const [lastname, setLastName] = useState(user.lastname || '')
+    const [firstName, setFirstName] = useState(firstname || '')
+    const [lastName, setLastName] = useState(lastname || '')
 
-    /**
-     * Toggles the edit form visibility.
-     * @function toggleEditForm
-     * @returns {void}
-     */
+    // Toggle the visibility of the edit form
     const toggleEditForm = useCallback(
         () => setShowEditForm(!showEditForm),
         [showEditForm]
     )
 
-    const getStorageType = () => {
-        return localStorage.getItem('token') ? localStorage : sessionStorage
-    }
-
     /**
-     * Handles the form submission.
-     * @function handleSubmitForm
-     * @param {Event} e - The form event.
-     * @returns {void}
+     * Handle form submission - dispatch the updateUserProfile action
+     * and hide the form
+     * @param {Event} e - The form submit event
      */
-    const handleSubmitForm = useCallback(
-        (e) => {
-            e.preventDefault()
-            // Dispatch the action to update the user
-            dispatch(updateUser({ firstname, lastname }))
+    const handleSubmitForm = useCallback((e) => {
+        e.preventDefault()
+        setShowEditForm(false)
+    }, [])
 
-            // Update the local storage
-            const storage = getStorageType()
-            persistUserInStorage(storage, {
-                ...user,
-                firstname,
-                lastname,
-            })
-
-            // Close the form
-            toggleEditForm()
-        },
-        [dispatch, firstname, lastname, toggleEditForm, user]
-    )
-
-    // Render the component
     return (
         <main className="main bg-dark">
             <header className="header">
+                {/* Show the edit form if showEditForm is true, otherwise show the welcome message */}
                 {showEditForm ? (
                     <h1>Welcome back</h1>
                 ) : (
@@ -85,6 +59,7 @@ export default function Profile() {
                     </>
                 )}
 
+                {/* The edit form */}
                 {showEditForm && (
                     <form className="edit-form" onSubmit={handleSubmitForm}>
                         <InputField
@@ -92,7 +67,7 @@ export default function Profile() {
                             name="firstName"
                             placeholder="First Name"
                             value={firstname}
-                            setValue={(e) => setFirstname(e.target.value)}
+                            setValue={(e) => setFirstName(e.target.value)}
                             labelClassName="sr-only"
                         />
                         <InputField
@@ -117,6 +92,7 @@ export default function Profile() {
             </header>
             <h2 className="sr-only">Accounts</h2>
 
+            {/* Render the account data */}
             {accountData &&
                 accountData.map((account, index) => (
                     <AccountSection key={index} account={account} />

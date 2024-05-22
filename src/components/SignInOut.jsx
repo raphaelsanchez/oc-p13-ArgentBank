@@ -1,33 +1,23 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { logoutUser } from '../store/userSlice'
-import { removeUserFromStorage } from '../utils'
+import { logout } from '../store/authSlice'
 
 export default function SignInOut() {
     // Redux state
-    const user = useSelector((state) => state.user)
+    const token = useSelector((state) => state.auth.token)
     const dispatch = useDispatch()
-
-    /**
-     * Removes the user from both localStorage and sessionStorage.
-     */
-    const removeUserFromAllStorages = () =>
-        [localStorage, sessionStorage].forEach(removeUserFromStorage)
 
     /**
      * Handles the sign out action.
      */
     const handleSignOut = () => {
-        // remove the user from localStorage and sessionStorage
-        removeUserFromAllStorages()
-
         // dispatch the logout action
-        dispatch(logoutUser())
+        dispatch(logout())
     }
 
     return (
         <>
-            {user && user.token ? (
+            {token ? (
                 <NavLink
                     className="main-nav-item"
                     to="/"
