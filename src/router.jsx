@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
 import App from './layouts/App'
 import Home from './pages/Home'
@@ -11,11 +12,11 @@ import { useSelector } from 'react-redux'
  * @returns {JSX.Element} The Router component.
  */
 export function Router() {
-    // Redux state
-    const user = useSelector((state) => state.user)
-
-    // Check if the user is authenticated to secure the profile page
-    const isAuthenticated = user && user.token
+    // Pricate route
+    const PrivateRoute = ({ children }) => {
+        const token = useSelector((state) => state.auth.token)
+        return token ? children : <Navigate to="/login" />
+    }
 
     // Create the router
     const router = createBrowserRouter([
@@ -33,14 +34,19 @@ export function Router() {
                 },
                 {
                     path: '/profile',
-                    element: isAuthenticated ? (
-                        <Profile />
-                    ) : (
-                        <Navigate to="/login" />
+                    element: (
+                        <PrivateRoute>
+                            <Profile />
+                        </PrivateRoute>
                     ),
                 },
             ],
         },
     ])
     return <RouterProvider router={router} />
+}
+
+// Props Validation
+Router.propTypes = {
+    children: PropTypes.node,
 }

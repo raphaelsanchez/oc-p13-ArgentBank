@@ -1,80 +1,56 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import { InputCheckbox } from '../components/ui/InputCheckbox'
 import { InputField } from '../components/ui/InputField'
-import { loginUser } from '../store/userSlice'
-import { persistUserInStorage } from '../utils'
+import { fetchUserProfile, loginUser } from '../store/authSlice'
 
 /**
- * SignIn page.
- * @returns {JSX.Element} The SignIn component.
+ * Login component - Allows the user to log in
+ * @component
+ * @returns {JSX.Element} The rendered Login component
  */
-export default function Login() {
-    // Redux state
+const Login = () => {
     const dispatch = useDispatch()
-    const token = useSelector((state) => state.user.token)
-
-    // Local state
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [rememberMe, setRememberMe] = useState(false)
-    const [error, setError] = useState('')
-
-    // React Router hook
     const navigate = useNavigate()
 
-    // Redirect the user to the profile page if they are already logged in
-    useEffect(() => {
-        if (token) {
-            navigate('/profile')
-        }
-    }, [token, navigate])
+    // Get the loading and error state from the Redux store
+    const { loading, error } = useSelector((state) => state.auth)
+
+    // Local state for form inputs
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [rememberMe, setRememberMe] = useState(false)
 
     /**
-     * Handles the form submission.
-     *
-     * @param {Event} e - The form submit event.
-     * @returns {void}
+     * Handle form submission - dispatch the loginUser action
+     * and navigate to the profile page if successful
+     * @param {Event} e - The form submit event
      */
-    const handleFormSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
-
-        // Fake login logic
-        const user = {
-            firstname: username,
-            rememberMe,
-            token: 'fakeToken123',
-        }
-
-        // Store the user in localStorage or sessionStorage depending on rememberMe
-        const storage = rememberMe ? localStorage : sessionStorage
-        persistUserInStorage(storage, user)
-
-        // Fake error handling
-        if (!username || !password) {
-            setError('Please fill in all fields')
-            return
-        }
-
-        // Dispatch the action to update the user
-        dispatch(loginUser(user))
+        dispatch(loginUser({ email, password, rememberMe })).then((result) => {
+            if (result.type.endsWith('fulfilled')) {
+                dispatch(fetchUserProfile())
+                navigate('/profile')
+            }
+        })
     }
 
-    // return the JSX for the component
     return (
         <main className="main bg-dark">
             <section className="sign-in-content">
                 <i className="fa fa-user-circle sign-in-icon"></i>
                 <h1>Sign In</h1>
-                {error && <p className="error-message">{error}</p>}
-                <form onSubmit={handleFormSubmit}>
+                {error && <p className="error-message">{error.message}</p>}
+                <form onSubmit={handleSubmit}>
                     <InputField
                         id="username"
                         name="username"
+                        type="email"
                         label="Username"
-                        setValue={(e) => setUsername(e.target.value)}
+                        setValue={(e) => setEmail(e.target.value)}
                     />
                     <InputField
                         id="password"
@@ -89,10 +65,12 @@ export default function Login() {
                         onChange={setRememberMe}
                     />
                     <Button type="submit" className="sign-in-button">
-                        Sign In
+                        {loading ? 'Signing...' : 'Sign In'}
                     </Button>
                 </form>
             </section>
         </main>
     )
 }
+
+export default Login

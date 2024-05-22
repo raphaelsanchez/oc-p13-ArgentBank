@@ -28,12 +28,12 @@ export const InputField = ({
             {label || placeholder}
         </label>
         <input
-            type={type || 'text'}
-            className="input"
             id={id}
+            type={type || 'text'}
             name={name}
             placeholder={placeholder}
             value={value}
+            className="input"
             onChange={(e) => setValue(e)}
         />
     </div>
