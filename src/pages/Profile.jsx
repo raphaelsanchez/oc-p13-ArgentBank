@@ -1,25 +1,38 @@
-import { useCallback, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useCallback, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { accountData } from '../__mocks__/accountData'
 import AccountSection from '../components/AccountSection'
 import Button from '../components/ui/Button'
 import { InputField } from '../components/ui/InputField'
+import { updateUserProfile } from '../store/authSlice'
 
 /**
  * Profile component - Allows the user to view and edit their profile
  * @component
  */
 export default function Profile() {
-    // Get the current user's first and last name from the Redux store
-    const firstname = useSelector((state) => state.auth.firstName)
-    const lastname = useSelector((state) => state.auth.lastName)
+    const dispatch = useDispatch()
+
+    // Get the values from the Redux store
+    const reduxFirstName = useSelector((state) => state.auth.firstName)
+    const reduxLastName = useSelector((state) => state.auth.lastName)
 
     // Local state for form visibility and form inputs
     const [showEditForm, setShowEditForm] = useState(false)
-    const [firstName, setFirstName] = useState(firstname || '')
-    const [lastName, setLastName] = useState(lastname || '')
+    const [firstName, setFirstName] = useState(reduxFirstName || '')
+    const [lastName, setLastName] = useState(reduxLastName || '')
 
-    // Toggle the visibility of the edit form
+    // Update local state when the values in the Redux store change
+    useEffect(() => {
+        setFirstName(reduxFirstName)
+        setLastName(reduxLastName)
+    }, [reduxFirstName, reduxLastName])
+
+    /**
+     * Toggles the edit form visibility.
+     * @function toggleEditForm
+     * @returns {void}
+     */
     const toggleEditForm = useCallback(
         () => setShowEditForm(!showEditForm),
         [showEditForm]
@@ -29,11 +42,16 @@ export default function Profile() {
      * Handle form submission - dispatch the updateUserProfile action
      * and hide the form
      * @param {Event} e - The form submit event
+     * @returns {void}
      */
-    const handleSubmitForm = useCallback((e) => {
-        e.preventDefault()
-        setShowEditForm(false)
-    }, [])
+    const handleSubmitForm = useCallback(
+        (e) => {
+            e.preventDefault()
+            dispatch(updateUserProfile({ firstName, lastName }))
+            setShowEditForm(false)
+        },
+        [dispatch, firstName, lastName]
+    )
 
     return (
         <main className="main bg-dark">
@@ -46,7 +64,7 @@ export default function Profile() {
                         <h1>
                             Welcome back{' '}
                             <span className="userName">
-                                {firstname} {lastname}
+                                {firstName} {lastName}
                             </span>
                         </h1>
                         <Button
@@ -66,7 +84,7 @@ export default function Profile() {
                             id="firstName"
                             name="firstName"
                             placeholder="First Name"
-                            value={firstname}
+                            value={firstName}
                             setValue={(e) => setFirstName(e.target.value)}
                             labelClassName="sr-only"
                         />
@@ -74,7 +92,7 @@ export default function Profile() {
                             id="lastName"
                             name="lastName"
                             placeholder="Last Name"
-                            value={lastname}
+                            value={lastName}
                             setValue={(e) => setLastName(e.target.value)}
                             labelClassName="sr-only"
                         />
