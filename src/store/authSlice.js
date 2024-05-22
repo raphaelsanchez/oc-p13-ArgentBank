@@ -5,8 +5,6 @@ import api from '../api'
  * Async thunk for logging in
  * @function loginUser
  * @param {Object} credentials - The user's credentials
- * @param {string} credentials.username - The user's username
- * @param {string} credentials.password - The user's password
  * @returns {Object} The action to dispatch
  */
 export const loginUser = createAsyncThunk(
@@ -41,6 +39,31 @@ export const fetchUserProfile = createAsyncThunk(
                     headers: { Authorization: `Bearer ${token}` },
                 }
             )
+            return response.data
+        } catch (error) {
+            if (error.response && error.response.data) {
+                return rejectWithValue(error.response.data)
+            }
+            return rejectWithValue(error.message)
+        }
+    }
+)
+
+/**
+ * Async thunk for updating user data
+ * @function updateUserProfile
+ * @param {Object} userUpdates - The updates to the user's profile
+ * @returns {Object} The action to dispatch
+ */
+export const updateUserProfile = createAsyncThunk(
+    'auth/updateUserProfile',
+    async (userUpdates, { getState, rejectWithValue }) => {
+        try {
+            const { token } = getState().auth
+            const response = await api.put('/user/profile', userUpdates, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            console.log(response.data)
             return response.data
         } catch (error) {
             if (error.response && error.response.data) {
@@ -111,6 +134,21 @@ const authSlice = createSlice({
                 state.email = action.payload.body.email
             })
             .addCase(fetchUserProfile.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload
+            })
+
+            // Update user profile cases (pending, fulfilled, rejected)
+            .addCase(updateUserProfile.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+                state.loading = false
+                state.firstName = action.payload.body.firstName
+                state.lastName = action.payload.body.lastName
+            })
+            .addCase(updateUserProfile.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })
