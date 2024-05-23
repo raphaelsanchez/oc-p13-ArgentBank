@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import { InputCheckbox } from '../components/ui/InputCheckbox'
 import { InputField } from '../components/ui/InputField'
-import { fetchUserProfile, loginUser } from '../store/authSlice'
+import { fetchUserProfile, loginUser } from '../store/authThunks'
 
 /**
  * Login component - Allows the user to log in
@@ -16,7 +16,7 @@ const Login = () => {
     const navigate = useNavigate()
 
     // Get the loading and error state from the Redux store
-    const { loading, error } = useSelector((state) => state.auth)
+    const { loading, error } = useSelector((state) => state.auth || {})
 
     // Local state for form inputs
     const [email, setEmail] = useState('')
@@ -32,6 +32,11 @@ const Login = () => {
         e.preventDefault()
         dispatch(loginUser({ email, password, rememberMe })).then((result) => {
             if (result.type.endsWith('fulfilled')) {
+                // Store the token in local or session storage based on the rememberMe checkbox
+                rememberMe
+                    ? localStorage.setItem('token', result.payload.body.token)
+                    : sessionStorage.setItem('token', result.payload.body.token)
+
                 dispatch(fetchUserProfile())
                 navigate('/profile')
             }
@@ -65,7 +70,7 @@ const Login = () => {
                         onChange={setRememberMe}
                     />
                     <Button type="submit" className="sign-in-button">
-                        {loading ? 'Signing...' : 'Sign In'}
+                        {loading ? 'Loading...' : 'Sign In'}
                     </Button>
                 </form>
             </section>

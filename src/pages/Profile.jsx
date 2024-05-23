@@ -4,7 +4,7 @@ import { accountData } from '../__mocks__/accountData'
 import AccountSection from '../components/AccountSection'
 import Button from '../components/ui/Button'
 import { InputField } from '../components/ui/InputField'
-import { updateUserProfile } from '../store/authSlice'
+import { updateUserProfile } from '../store/authThunks'
 
 /**
  * Profile component - Allows the user to view and edit their profile

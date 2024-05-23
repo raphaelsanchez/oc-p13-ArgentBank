@@ -1,77 +1,10 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import api from '../api'
-
-/**
- * Async thunk for logging in
- * @function loginUser
- * @param {Object} credentials - The user's credentials
- * @returns {Object} The action to dispatch
- */
-export const loginUser = createAsyncThunk(
-    'auth/loginUser',
-    async (credentials, { rejectWithValue }) => {
-        try {
-            const response = await api.post('/user/login', credentials)
-            return response.data
-        } catch (error) {
-            if (error.response && error.response.data) {
-                return rejectWithValue({ message: 'Invalid credentials' })
-            }
-            return rejectWithValue(error.message)
-        }
-    }
-)
-
-/**
- * Async thunk for fetching user profile
- * @function fetchUserProfile
- * @returns {Object} The action to dispatch
- */
-export const fetchUserProfile = createAsyncThunk(
-    'auth/fetchUserProfile',
-    async (_, { getState, rejectWithValue }) => {
-        try {
-            const { token } = getState().auth
-            const response = await api.post(
-                '/user/profile',
-                {},
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            )
-            return response.data
-        } catch (error) {
-            if (error.response && error.response.data) {
-                return rejectWithValue(error.response.data)
-            }
-            return rejectWithValue(error.message)
-        }
-    }
-)
-
-/**
- * Async thunk for updating user data
- * @function updateUserProfile
- * @param {Object} userUpdates - The updates to the user's profile
- * @returns {Object} The action to dispatch
- */
-export const updateUserProfile = createAsyncThunk(
-    'auth/updateUserProfile',
-    async (userUpdates, { getState, rejectWithValue }) => {
-        try {
-            const { token } = getState().auth
-            const response = await api.put('/user/profile', userUpdates, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            return response.data
-        } catch (error) {
-            if (error.response && error.response.data) {
-                return rejectWithValue(error.response.data)
-            }
-            return rejectWithValue(error.message)
-        }
-    }
-)
+import { createSlice } from '@reduxjs/toolkit'
+import {
+    fetchUserProfile,
+    loginUser,
+    refetchUserStatus,
+    updateUserProfile,
+} from './authThunks'
 
 /**
  * Slice for handling authentication state
@@ -96,9 +29,12 @@ const authSlice = createSlice({
          * @param {Object} state - The current state
          */
         logout: (state) => {
-            state.user = null
+            state.firstName = null
+            state.lastName = null
+            state.email = null
             state.token = null
             localStorage.removeItem('token')
+            sessionStorage.removeItem('token')
         },
     },
     extraReducers: (builder) => {
@@ -111,12 +47,32 @@ const authSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false
                 state.token = action.payload.body.token
-                state.rememberMe = action.payload.body.rememberMe
-                if (state.rememberMe) {
-                    localStorage.setItem('token', action.payload.body.token)
+                if (localStorage.getItem('token')) {
+                    state.token = localStorage.getItem('token')
                 }
             })
             .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload
+            })
+
+            // Check user status cases (pending, fulfilled, rejected)
+            .addCase(refetchUserStatus.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(refetchUserStatus.fulfilled, (state, action) => {
+                state.loading = false
+                state.token =
+                    localStorage.getItem('token') ||
+                    sessionStorage.getItem('token')
+                if (action.payload && action.payload.body) {
+                    state.firstName = action.payload.body.firstName
+                    state.lastName = action.payload.body.lastName
+                    state.email = action.payload.body.email
+                }
+            })
+            .addCase(refetchUserStatus.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })

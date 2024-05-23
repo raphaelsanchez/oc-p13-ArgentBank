@@ -9,8 +9,8 @@ import SignInOut from '../components/SignInOut'
  */
 export default function Nav() {
     // Get the current user's token and first name from the Redux store
-    const token = useSelector((state) => state.auth.token)
-    const firstName = useSelector((state) => state.auth.firstName)
+    const token = useSelector((state) => state.auth && state.auth.token)
+    const firstName = useSelector((state) => state.auth && state.auth.firstName)
 
     // Return the JSX for the Nav component
     return (
