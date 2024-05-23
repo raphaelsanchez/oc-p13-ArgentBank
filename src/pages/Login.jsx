@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import { InputCheckbox } from '../components/ui/InputCheckbox'
 import { InputField } from '../components/ui/InputField'
-import { fetchUserProfile, loginUser } from '../store/authSlice'
+import { fetchUserProfile, loginUser } from '../store/authThunks'
 
 /**
  * Login component - Allows the user to log in

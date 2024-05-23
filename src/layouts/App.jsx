@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 import '../assets/styles/app.css'
 import Footer from '../layouts/Footer'
 import Nav from '../layouts/Nav'
-import { refetchUserStatus } from '../store/authSlice'
+import { refetchUserStatus } from '../store/authThunks'
 
 /**
  * The main component for the application.
