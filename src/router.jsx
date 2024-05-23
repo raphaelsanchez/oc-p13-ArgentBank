@@ -12,11 +12,10 @@ import { useSelector } from 'react-redux'
  * @returns {JSX.Element} The Router component.
  */
 export function Router() {
-    // Pricate route
-    const PrivateRoute = ({ children }) => {
-        const token = useSelector((state) => state.auth.token)
-        return token ? children : <Navigate to="/login" />
-    }
+    const token =
+        useSelector((state) => state.auth.token) ||
+        localStorage.getItem('token') ||
+        null
 
     // Create the router
     const router = createBrowserRouter([
@@ -30,15 +29,11 @@ export function Router() {
                 },
                 {
                     path: '/login',
-                    element: <Login />,
+                    element: token ? <Navigate to="/profile" /> : <Login />,
                 },
                 {
                     path: '/profile',
-                    element: (
-                        <PrivateRoute>
-                            <Profile />
-                        </PrivateRoute>
-                    ),
+                    element: token ? <Profile /> : <Navigate to="/login" />,
                 },
             ],
         },
