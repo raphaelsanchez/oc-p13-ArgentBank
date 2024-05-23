@@ -1,10 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import {
-    fetchUserProfile,
-    loginUser,
-    refetchUserStatus,
-    updateUserProfile,
-} from './authThunks'
+import { authBuilders } from './authBuilders'
 
 /**
  * Slice for handling authentication state
@@ -37,77 +32,7 @@ const authSlice = createSlice({
             sessionStorage.removeItem('token')
         },
     },
-    extraReducers: (builder) => {
-        builder
-            // Login user cases (pending, fulfilled, rejected)
-            .addCase(loginUser.pending, (state) => {
-                state.loading = true
-                state.error = null
-            })
-            .addCase(loginUser.fulfilled, (state, action) => {
-                state.loading = false
-                state.token = action.payload.body.token
-                if (localStorage.getItem('token')) {
-                    state.token = localStorage.getItem('token')
-                }
-            })
-            .addCase(loginUser.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload
-            })
-
-            // Check user status cases (pending, fulfilled, rejected)
-            .addCase(refetchUserStatus.pending, (state) => {
-                state.loading = true
-                state.error = null
-            })
-            .addCase(refetchUserStatus.fulfilled, (state, action) => {
-                state.loading = false
-                state.token =
-                    localStorage.getItem('token') ||
-                    sessionStorage.getItem('token')
-                if (action.payload && action.payload.body) {
-                    state.firstName = action.payload.body.firstName
-                    state.lastName = action.payload.body.lastName
-                    state.email = action.payload.body.email
-                }
-            })
-            .addCase(refetchUserStatus.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload
-            })
-
-            // Fetch user profile cases (pending, fulfilled, rejected)
-            .addCase(fetchUserProfile.pending, (state) => {
-                state.loading = true
-                state.error = null
-            })
-            .addCase(fetchUserProfile.fulfilled, (state, action) => {
-                state.loading = false
-                state.firstName = action.payload.body.firstName
-                state.lastName = action.payload.body.lastName
-                state.email = action.payload.body.email
-            })
-            .addCase(fetchUserProfile.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload
-            })
-
-            // Update user profile cases (pending, fulfilled, rejected)
-            .addCase(updateUserProfile.pending, (state) => {
-                state.loading = true
-                state.error = null
-            })
-            .addCase(updateUserProfile.fulfilled, (state, action) => {
-                state.loading = false
-                state.firstName = action.payload.body.firstName
-                state.lastName = action.payload.body.lastName
-            })
-            .addCase(updateUserProfile.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload
-            })
-    },
+    extraReducers: authBuilders,
 })
 
 export const { logout } = authSlice.actions
