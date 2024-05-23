@@ -1,18 +1,20 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
+import { persistor } from '../store'
 import { logout } from '../store/authSlice'
 
 export default function SignInOut() {
     // Redux state
-    const token = useSelector((state) => state.auth.token)
+    const token = useSelector((state) => state.auth && state.auth.token)
     const dispatch = useDispatch()
 
     /**
      * Handles the sign out action.
      */
-    const handleSignOut = () => {
-        // dispatch the logout action
+    const handleSignOut = async () => {
         dispatch(logout())
+        await persistor.flush() // Écrit toutes les données non persistées dans le stockage
+        persistor.purge()
     }
 
     return (
